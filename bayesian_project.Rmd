@@ -537,11 +537,11 @@ ggplot(ape_dat, aes(x=run, y = running_RMSE, color = source)) +
     geom_hline(yintercept = sum_table[[2,5]], color = "#00BFC4", lty = 2) +
     geom_text(aes(x = nrow(ape_dat)/2-4, y = sum_table[[2,5]]+0.05*sqrt(sum_table[[2,3]])), label = signif(sum_table[[2,5]], digits = 4), color = "#00BFC4") +
     theme(plot.title = element_text(hjust = 0.5)) +
-    labs(title = "Running Bootstrap RMSE Estimate by Iteration Number",x="Iteration Number",y = "Running Mean RMSE Estimate", color = "Model") +
+    labs(title = "Running Cross Validation RMSE Estimate by Iteration Number",x="Iteration Number",y = "Running Mean RMSE Estimate", color = "Model") +
     theme_bw()
 
 ```
-The first plot of the data compares the mean estimates for the RMSE for each model as the number of iterations of bootstrap sampling increases to 60. The median is plotted as a dotted line for each running RMSE estimate for each model. This line is meant to represent a number near to the likely convergence value of the mean RMSE estimate for each model, or its central limit (the median is used since these central limits often begin as a skewed distribution of RMSE estimates). This plot is useful as a check on the mean estimation process as more iterations should cause convergence at a single value for the RMSE. The plots confirm that this did indeed happen after 60 iterations for both sets of data. 
+The first plot of the data compares the mean estimates for the RMSE for each model as the number of iterations of the cross-validation increases to 60. The median is plotted as a dotted line for each running RMSE estimate for each model. This line is meant to represent a number near to the likely convergence value of the mean RMSE estimate for each model, or its central limit (the median is used since these central limits often begin as a skewed distribution of RMSE estimates). This plot is useful as a check on the mean estimation process as more iterations should cause convergence at a single value for the RMSE. The plots confirm that this did indeed happen after 60 iterations for both sets of data. 
 
 <br>
 
@@ -568,7 +568,7 @@ grid.arrange(boxplot, density, ncol=2)
 As these plots show, it appears that the adjusted model has a lower RMSE value.
 <br>
 
-A quick Bayesian inference test will determine if this difference is significant given the distribution of RMSE estimates from the bootstrap test:
+A quick Bayesian inference test will determine if this difference is significant given the distribution of RMSE estimates from the cross validation:
 
 ```{r bayes-inf, message=FALSE, warning=FALSE}
 bayes_inference(y = RMSE, x = source, data = ape_dat, statistic = "mean", type = "ht", null = 0, alternative = "twosided",show_plot=FALSE)
@@ -682,7 +682,7 @@ row1<- data.frame(type="95% cred.", lwr = ci_audience[1], pred = ci_audience[3],
 row2 <- data.frame(type ="RMSE", lwr = ci_audience[3] - RMSE, pred = ci_audience[3], upr = ci_audience[3] + RMSE)
 pandoc.table(rbind(row1,row2))
 ```
-The predicted `audience_score` for "Arrival" was 89.53 and both the 95% credible interval and predicted RMSE (from the bootstrap estimate) contain the actual `audience_score` value, 82. Thus, the model's prediction was not unusual and within the expectations for its accuracy. 
+The predicted `audience_score` for "Arrival" was 89.53 and both the 95% credible interval and predicted RMSE (from the cross-validation estimate) contain the actual `audience_score` value, 82. Thus, the model's prediction was not unusual and within the expectations for its accuracy. 
 
 <br>
 
@@ -698,14 +698,14 @@ row1<- data.frame(type="95% cred.", lwr = ci_audience[1], pred = ci_audience[3],
 row2 <- data.frame(type ="RMSE", lwr = ci_audience[3] - RMSE, pred = ci_audience[3], upr = ci_audience[3] + RMSE)
 pandoc.table(rbind(row1,row2))
 ```
-The predicted `audience_score` for "Suicide Squad" was 55.69 and both the 95% credible interval and predicted RMSE (from the bootstrap estimate) contain the actual `audience_score` value, 62. Thus, the model's prediction was not unusual and within the expectations for its accuracy.
+The predicted `audience_score` for "Suicide Squad" was 55.69 and both the 95% credible interval and predicted RMSE (from the cross-validation estimate) contain the actual `audience_score` value, 62. Thus, the model's prediction was not unusual and within the expectations for its accuracy.
 
 
 * * *
 
 ## Part 6: Conclusion
 
-Using Bayesian regression, it is possible to predict the Rotten Tomatoes Audience Score from the variables provided in the dataset and the new, derived variables given by the project requirements. While the BMA takes into account all variables, `imdb_rating` has a particularly strong relationship with `audience_score` and the BMA is weighted heavily by this variable. However, the first BMA fit to the data involved bias at low values of `imdb_rating` and underestimated the `audience_score` for most values of `imdb_rating` under 4.6. Thus, a new, derived variable was added to adjust the model for this issue and to increase the predictions for movies with low `imdb_rating` values. This adjustment did remove the low-end bias in the model and was compared to the original BMA by using a bootstrap, cross-validation procedure to estimate the RMSE of both models. The adjusted model did decrease bias and did not cause an increase in prediction error, so it was accepted as the final model. In diagnosing the outliers in the model's predictions, it appears the model fails to predict the `audience_score` when the `imdb_rating` times ten is not close in value to the `audience_score` signifying a disagreement in ratings between users of IMDB and Rotten Tomatoes. However, there are only a few movies with this issue in the data. Otherwise, the model makes predictions with an expected average error of about ±9 points with large 95% credible intervals.  
+Using Bayesian regression, it is possible to predict the Rotten Tomatoes Audience Score from the variables provided in the dataset and the new, derived variables given by the project requirements. While the BMA takes into account all variables, `imdb_rating` has a particularly strong relationship with `audience_score` and the BMA is weighted heavily by this variable. However, the first BMA fit to the data involved bias at low values of `imdb_rating` and underestimated the `audience_score` for most values of `imdb_rating` under 4.6. Thus, a new, derived variable was added to adjust the model for this issue and to increase the predictions for movies with low `imdb_rating` values. This adjustment did remove the low-end bias in the model and was compared to the original BMA by using a cross-validation procedure to estimate the RMSE of both models. The adjusted model did decrease bias and did not cause an increase in prediction error, so it was accepted as the final model. In diagnosing the outliers in the model's predictions, it appears the model fails to predict the `audience_score` when the `imdb_rating` times ten is not close in value to the `audience_score` signifying a disagreement in ratings between users of IMDB and Rotten Tomatoes. However, there are only a few movies with this issue in the data. Otherwise, the model makes predictions with an expected average error of about ±9 points with large 95% credible intervals.  
 
 From this analysis, it is clear more information is needed to improve the accuracy of predicting a movie's popularity. Larger sample sizes may help, but even better changes would include advanced sampling designs that control for sources of confounding in the data and make the sample more representative of the typical movies being released. In addition, more specific and distinguishing features of movies should be added to the data. More factors that detail the general outline of what happens in the movie's story, or how much was spent on advertising for the film are possible features that affect popularity. Other questions such as if there are popularity effects for movie sequels are important to consider as well. Finally, greater representations of movies with extreme ratings by website users and where IMDB and Rotten Tomato users disagreed by a significant amount should be targeted in any future studies to address to edge cases where this model fails to predict the `audience_score`. 
 

@@ -4,7 +4,7 @@ The following files were submitted for the first project of Duke University's Ba
 ### Submission by Connor Lenio. Email: cojamalo@gmail.com
 Completion Date: May 23, 2017
 
-### Please visit  to properly view the project html file.
+### Please visit https://cojamalo.github.io/DATA-DUKE-Bayes-Reg/bayesian_project.html to properly view the project html file.
 
 ### Introduction to the Data
 From "Data Analysis Project Information":

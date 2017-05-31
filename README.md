@@ -44,4 +44,4 @@ NOTE: If you have previously completed the Course 3 in the Statistics with R Spe
 ### The Scripts
 This project feautures a RMarkdown document produced in RStudio and knitted to HTML. Please view the .html, .Rmd, or .md file for an overview of both the assignment questions and my responses.
 
-Project coded by Connor Lenio ©2017. 
+Project coded by Connor Lenio - released into the public domain for educational purposes in 2017. 
